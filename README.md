@@ -9,7 +9,7 @@ events, on a synthetic year of a 120-truck European fleet.
 | **Question** | How much does empty running cost the fleet, and what does a 30% cut save after its costs? |
 | **Data** | 2.5M GPS pings and 37,612 load/unload events for 120 trucks over 2025 (synthetic, see below). Nothing in it says "empty". |
 | **Method** | Split each truck's track into legs between cargo events. A leg that starts with an unload runs empty. Distance comes from GPS, with parked-truck noise filtered out. An empty leg of 5 km or more is an empty trip. |
-| **Check** | The simulator's ground truth is kept apart from the models. Tests require the detected legs to match it exactly, and the measured km to match within 3%. |
+| **Check** | The simulator's ground truth is kept apart from the models. Tests require the detected legs to match it exactly, and at least 99.9% of legs to match on km within 3% (or 2 km on short legs). |
 | **Assumptions** | Cost per empty km EUR 1.139 (fuel 0.434, tolls 0.18, tyres/maintenance 0.09, driver 0.435). Each avoided km needs 0.25 km of detour. Programme cost is EUR 1,500 per truck a year. All in [one file](dbt/seeds/cost_assumptions.csv). |
 | **Result** | **17,321 empty trips a year, 23.0% of all km, costing EUR 4.73M a year. A 30% cut saves EUR 1.42M gross and EUR 885k net** (after EUR 355k of detours and EUR 180k programme cost). |
 
@@ -19,11 +19,13 @@ The numbers above come from `empty-trips report` after a full run with the defau
 
 ## Why synthetic data
 
-This is the method behind an analysis I did on a logistics company's ERP and telematics data.
-That analysis found 14,987 empty trips and EUR 12M of annual loss exposure, and modelled a
-30% reduction worth EUR 1.8M net. The company data stays with the company.
+This is a public, synthetic-data version of an empty-trip analysis I did for a logistics
+company (details anonymized). That analysis found 14,987 empty trips and EUR 12M of annual
+loss exposure, and modelled a 30% reduction worth EUR 1.8M net. The company data stays with
+the company.
 
-Here, the method runs on a simulator. I did **not** tune it to reproduce those numbers. I
+This repo builds the same kind of analysis on a simulator. I did **not** tune it to
+reproduce those numbers. I
 calibrated it to a public benchmark instead: Eurostat reports that empty vehicles covered
 21.8% of EU road freight vehicle-km in 2025
 ([Road freight transport by journey characteristics](https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Road_freight_transport_by_journey_characteristics)).

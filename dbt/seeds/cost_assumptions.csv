@@ -1,0 +1,10 @@
+parameter,value,unit,note
+fuel_l_per_100km_empty,28,L/100km,Diesel use of an empty 40 t tractor-trailer; loaded runs use more
+diesel_eur_per_l,1.55,EUR/L,Commercial diesel price net of VAT
+tolls_eur_per_km,0.18,EUR/km,Blended road charges over a mixed EU network (some countries far higher or lower)
+maintenance_tyres_eur_per_km,0.09,EUR/km,Tyres plus maintenance and repairs that scale with distance
+driver_eur_per_hour,27,EUR/h,Fully loaded driver cost (wage plus employer charges plus allowances)
+avg_empty_speed_kmh,62,km/h,Average speed of an empty run; turns driver hours into a per-km cost
+reduction_share,0.30,share,Scenario: share of empty km the fleet stops running
+detour_share,0.25,share,Every avoided empty km needs this many extra km to reach the backhaul load
+programme_eur_per_truck_year,1500,EUR/truck/year,Load-board subscriptions plus planner time to find backhauls

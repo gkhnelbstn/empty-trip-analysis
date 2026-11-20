@@ -1,0 +1,33 @@
+name: empty_trips
+version: "0.1.0"
+config-version: 2
+profile: empty_trips
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: target
+clean-targets: [target, dbt_packages]
+
+vars:
+  # A GPS step shorter than this is position noise of a parked truck, not driving.
+  stationary_step_km: 0.15
+  # An empty leg shorter than this is a move within the same yard, not an empty trip.
+  min_empty_trip_km: 5
+
+models:
+  empty_trips:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: table
+    marts:
+      +schema: marts
+      +materialized: table
+
+seeds:
+  empty_trips:
+    +schema: reference

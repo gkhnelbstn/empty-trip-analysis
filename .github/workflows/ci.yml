@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: fleet
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: fleet
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U fleet -d fleet"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: "5432"
+      PGUSER: fleet
+      PGPASSWORD: ci-only-password
+      PGDATABASE: fleet
+      DBT_PROJECT_DIR: dbt
+      DBT_PROFILES_DIR: dbt
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install
+        run: uv sync --locked --all-groups
+
+      - name: Lint
+        run: |
+          uv run ruff check
+          uv run ruff format --check
+
+      - name: Unit and database tests
+        run: uv run pytest -v
+
+      # A full year for a smaller fleet keeps CI fast; the detection tests are the same.
+      - name: Generate fleet
+        run: uv run empty-trips generate --trucks 20
+
+      # Builds every model and runs every test, including detection against ground truth.
+      - name: dbt build
+        run: uv run dbt build
+
+      - name: Report
+        run: uv run empty-trips report
+
+      - name: App renders against the marts
+        run: uv run python scripts/check_app.py

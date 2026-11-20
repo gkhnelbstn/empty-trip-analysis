@@ -1,0 +1,16 @@
+version: 2
+
+seeds:
+  - name: cost_assumptions
+    description: >
+      Every number the cost model uses, in one file. These are stated assumptions for a
+      generic EU long-haul fleet, not measured values: change them and run `dbt build`
+      to see the scenario move.
+    config:
+      column_types:
+        value: numeric
+    columns:
+      - name: parameter
+        tests: [unique, not_null]
+      - name: value
+        tests: [not_null]

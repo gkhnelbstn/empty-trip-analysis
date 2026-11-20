@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: int_track_steps
+    description: Steps between position fixes (pings and cargo events), with distance and leg.
+    tests:
+      - unique_combination:
+          arguments:
+            columns: [truck_id, ts, is_event]
+    columns:
+      - name: step_km
+        tests: [not_null]
+
+  - name: int_legs
+    description: Legs between consecutive cargo events, open legs included and flagged.
+    tests:
+      - unique_combination:
+          arguments:
+            columns: [truck_id, leg_seq]
+    columns:
+      - name: kind
+        tests:
+          - accepted_values: {arguments: {values: [empty, loaded]}}
+      - name: is_sequence_break
+        description: A source problem (two loads or two unloads in a row). Should never be true.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [false]
+                quote: false
+              config: {where: "is_closed"}

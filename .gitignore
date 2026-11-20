@@ -1,0 +1,23 @@
+# secrets
+.env
+
+# data never goes into git
+data/
+*.parquet
+*.part
+
+# python
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+dist/
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+logs/
+.user.yml
+dbt/target-docs/

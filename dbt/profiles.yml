@@ -1,0 +1,15 @@
+# Everything comes from the standard libpq environment variables (see .env.example),
+# so the same profile works locally and in CI. No secrets in this file.
+empty_trips:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('PGHOST', '127.0.0.1') }}"
+      port: "{{ env_var('PGPORT', '5432') | int }}"
+      user: "{{ env_var('PGUSER', 'fleet') }}"
+      password: "{{ env_var('PGPASSWORD') }}"
+      dbname: "{{ env_var('PGDATABASE', 'fleet') }}"
+      schema: analytics
+      threads: 4
+      connect_timeout: 10

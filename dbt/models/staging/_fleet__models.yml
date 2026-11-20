@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: stg_fleet__gps_pings
+    description: GPS pings, one per truck and timestamp.
+    tests:
+      - unique_combination:
+          arguments:
+            columns: [truck_id, recorded_at]
+    columns:
+      - name: truck_id
+        tests:
+          - not_null
+          - relationships: {arguments: {to: "ref('stg_fleet__trucks')", field: truck_id}}
+      - name: recorded_at
+        tests: [not_null]
+
+  - name: stg_fleet__cargo_events
+    columns:
+      - name: event_id
+        tests: [unique, not_null]
+      - name: truck_id
+        tests:
+          - not_null
+          - relationships: {arguments: {to: "ref('stg_fleet__trucks')", field: truck_id}}
+      - name: event_type
+        tests:
+          - accepted_values: {arguments: {values: [load, unload]}}
+
+  - name: stg_fleet__trucks
+    columns:
+      - name: truck_id
+        tests: [unique, not_null]
+
+  - name: stg_fleet__observation_period
+    description: Exactly one row; the scenario annualises over this period.
+    tests:
+      - exactly_one_row

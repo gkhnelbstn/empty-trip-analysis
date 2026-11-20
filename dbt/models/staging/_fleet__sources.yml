@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: fleet
+    schema: raw
+    description: What the fleet's systems deliver, written by `empty-trips generate`.
+    tables:
+      - name: trucks
+      - name: gps_pings
+        description: >
+          Telematics pings. Every 10 minutes while driving, hourly while parked, with position
+          noise, lost pings and repeated pings. No key: duplicates are part of the feed.
+      - name: cargo_events
+        description: One `load` and one `unload` per shipment, from the transport system.
+      - name: generation_log
+        description: The observation period of the current data.
+
+  - name: truth
+    schema: truth
+    description: >
+      What the simulator really drove. Read only by tests, never by models, so the detection
+      cannot peek at the answer.
+    tables:
+      - name: legs

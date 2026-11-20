@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: fct_legs
+    description: Closed legs between consecutive cargo events, run empty or loaded.
+    columns:
+      - name: leg_id
+        tests: [unique, not_null]
+      - name: truck_id
+        tests:
+          - not_null
+          - relationships: {arguments: {to: "ref('stg_fleet__trucks')", field: truck_id}}
+      - name: kind
+        tests:
+          - accepted_values: {arguments: {values: [empty, loaded]}}
+      - name: km
+        tests: [not_null]
+
+  - name: fct_empty_trips
+    description: Empty legs of at least `min_empty_trip_km`. One row per empty trip.
+    columns:
+      - name: leg_id
+        tests:
+          - unique
+          - not_null
+          - relationships: {arguments: {to: "ref('fct_legs')", field: leg_id}}
+
+  - name: agg_empty_km_monthly
+    columns:
+      - name: month
+        tests: [unique, not_null]
+
+  - name: agg_empty_km_by_truck
+    columns:
+      - name: truck_id
+        tests: [unique, not_null]
+
+  - name: mart_savings_scenario
+    description: The result in one row. See the SQL header for the formula.
+    tests:
+      - exactly_one_row
+    columns:
+      - name: net_saving
+        tests: [not_null]
